@@ -1,9 +1,8 @@
-
 import { lusitana } from "@/app/fonts";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import SearchBarImage from "@/components/SearchBar/SearchBarImage";
-import {TableImages} from "@/components/Tables/TableImages";
+import { TableImages } from "@/components/Tables/TableImages";
 import axios from "axios";
 import { Suspense, useRef } from "react";
 
@@ -12,12 +11,8 @@ export default async function ImagesPage({
 }: {
   searchParams?: { query: string; page?: string };
 }) {
-
-  const query = searchParams?.query || '';
+  const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
-  
-  
-
 
   // Single Image File Upload Function
 
@@ -58,15 +53,12 @@ export default async function ImagesPage({
         <main className="mx-auto w-full max-w-[1080px]">
           <Breadcrumb pageName="Images" />
           <div className="w-full flex flex-col items-center justify-between space-y-2">
-  
-      <div className="my-4 w-full flex items-center justify-between gap-2 md:mt-8">
-        <SearchBarImage placeholder="Search images..." />
-        
-      </div>
-      <Suspense key={query + currentPage}>
-        <TableImages query={query} currentPage={currentPage} />
-      </Suspense>
-   
+            <div className="my-4 w-full flex items-center justify-between gap-2 md:mt-8">
+              <SearchBarImage placeholder="Search images..." />
+            </div>
+            <Suspense key={query + currentPage}>
+              <TableImages query={query} currentPage={currentPage} />
+            </Suspense>
           </div>
           <div className="flex flex-col">
             <div className=" m-[1px] w-full p-[1px] lg:w-1/2 ">
@@ -84,7 +76,6 @@ export default async function ImagesPage({
                     <input
                       type="file"
                       accept="image/*"
-                      
                       className="w-full cursor-pointer rounded-[7px] border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-[#E2E8F0] file:px-6.5 file:py-[13px] file:text-body-sm file:font-medium file:text-dark-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-dark dark:border-dark-3 dark:bg-dark-2 dark:file:border-dark-3 dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                     />
                   </div>

@@ -102,7 +102,7 @@ const ChatCard = () => {
                 </p>
               </div>
               {chat.textCount !== 0 && (
-                <div className="flex items-center justify-center rounded-full bg-primary px-2 py-0.5">
+                <div className="flex items-center justify-center rounded-full bg-primaryna px-2 py-0.5">
                   <span className="text-sm font-medium text-white">
                     {" "}
                     {chat.textCount}

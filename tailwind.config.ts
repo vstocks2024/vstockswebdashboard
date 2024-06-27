@@ -35,7 +35,7 @@ const config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
 
-        //primaryna: "#5750F1",
+        primaryna: "#5750F1",
         stroke: "#E6EBF1",
         "stroke-dark": "#27303E",
         dark: {
