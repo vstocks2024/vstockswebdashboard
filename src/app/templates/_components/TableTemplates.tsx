@@ -6,7 +6,7 @@ import {
     TableRow,
   } from "../../../components/ui/table";
   
-  export default function TableVideos() {
+  export default function TableTemplates() {
     return (
       <>
         <Table>

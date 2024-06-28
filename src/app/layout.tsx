@@ -5,6 +5,8 @@ import "@/css/satoshi.css";
 import "./globals.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RootLayout({
   children,
@@ -24,6 +26,18 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning={true}>
         {loading ? <Loader /> : children}
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </body>
     </html>
   );
