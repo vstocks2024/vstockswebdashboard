@@ -1,7 +1,7 @@
 "use client"
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb"
 import DefaultLayout from "@/components/Layouts/DefaultLaout"
-import { TableAnimations } from "@/components/Tables/TableAnimations";
+import TableVideos  from "@/app/uploads/videos/_components/TableVideos";
 import axios from "axios";
 
 export default function VideoPage(){
@@ -38,7 +38,7 @@ export default function VideoPage(){
     <DefaultLayout>
     <main className="mx-auto w-full max-w-[1000px] border-white">
         <Breadcrumb pageName="Videos" />
-        <TableAnimations/>
+        <TableVideos/>
 
      <div className="m-[1px] p-[1px] flex flex-col">
      <div className="m-[1px] p-[1px] lg:w-1/2 w-full ">
