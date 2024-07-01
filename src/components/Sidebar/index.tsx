@@ -17,6 +17,8 @@ import { CgProfile } from "react-icons/cg";
 import { HiOutlineUserGroup } from "react-icons/hi2";
 import { FaLayerGroup } from "react-icons/fa";
 import { HiOutlinePrinter } from "react-icons/hi2";
+import { FaVectorSquare } from "react-icons/fa";
+import { RiHashtag } from "react-icons/ri";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -193,6 +195,11 @@ const menuGroups = [
         ],
       },
       {
+        icon:<FaVectorSquare size={24}/>,
+        label:"Vectors",
+        route:"/vectors",
+      },
+      {
         icon: <FaLayerGroup size={24}/>,
         label: "Categories",
         route: "/categories",
@@ -201,6 +208,11 @@ const menuGroups = [
         icon: <HiTemplate size={24}/>,
         label: "Templates",
         route: "/templates",
+      },
+      {
+        icon:<RiHashtag size={24}/>,
+        label:"Tags",
+        route:"/tags",
       },
     ],
   },
