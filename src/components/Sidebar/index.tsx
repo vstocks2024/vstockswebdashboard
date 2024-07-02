@@ -206,8 +206,8 @@ const menuGroups = [
       },
       {
         icon: <HiTemplate size={24}/>,
-        label: "Templates",
-        route: "/templates",
+        label: "Animations",
+        route: "/animations",
       },
       {
         icon:<RiHashtag size={24}/>,

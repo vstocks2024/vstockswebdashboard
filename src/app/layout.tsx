@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "@/components/ui/toaster"
 
 export default function RootLayout({
   children,
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning={true}>
         {loading ? <Loader /> : children}
+        <Toaster/>
       </body>
     </html>
   );

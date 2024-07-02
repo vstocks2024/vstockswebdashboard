@@ -8,7 +8,7 @@ async function getData(): Promise<Category[]> {
   }
 
 
-export default async function CategoriesPage(){
+export default async function CategoryPage(){
     const data = await getData()
     return (<DefaultLayout>
             <Breadcrumb pageName="Categories" />

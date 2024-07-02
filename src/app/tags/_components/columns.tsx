@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,25 +10,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Vectors = {
+export type Tag = {
   id: string;
   name: string;
   description: string;
-  likes: number;
-  shares: number;
-  format: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export const columns: ColumnDef<Vectors>[] = [
+export const columns: ColumnDef<Tag>[] = [
   {
     accessorKey: "id",
-    header: "ID",
+    header: "Id",
   },
   {
     accessorKey: "name",
@@ -37,18 +34,6 @@ export const columns: ColumnDef<Vectors>[] = [
   {
     accessorKey: "description",
     header: "Description",
-  },
-  {
-    accessorKey: "likes",
-    header: "Likes",
-  },
-  {
-    accessorKey: "share",
-    header: "Shared",
-  },
-  {
-    accessorKey: "format",
-    header: "Format",
   },
   {
     accessorKey: "createdAt",
@@ -76,7 +61,7 @@ export const columns: ColumnDef<Vectors>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(payment.id)}
             >
-              Copy Vector ID
+              Copy Tag Id
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit</DropdownMenuItem>
@@ -87,5 +72,4 @@ export const columns: ColumnDef<Vectors>[] = [
       )
     },
   },
-
 ];
