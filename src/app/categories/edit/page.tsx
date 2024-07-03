@@ -1,5 +1,6 @@
 "use client";
 
+
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import { z } from "zod";
@@ -19,8 +20,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
+import {useSearchParams } from "next/navigation";
 
 const FormSchema = z.object({
+  id: z.string(),
   name: z
     .string()
     .min(2, { message: "Minimum characters must be 3" })
@@ -31,46 +34,82 @@ const FormSchema = z.object({
     .max(500, { message: "Maximum characters must be 500" }),
 });
 
-export default function NewCategoryPage() {
+async function handleGetCategoryById(id:string) {
+  const resp=await axios.get(`${process.env.NEXT_PUBLIC_URL}/categories/get/${id}`);
+  console.log(resp);
+
+}
+
+export default function EditCategoryPage() {
+  const searchParams = useSearchParams();
+  const category_id=searchParams.get('category_id')
+  console.log(category_id);
+  
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      id:"",
       name: "",
       description: "",
     },
   });
+  
+    
+  
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     //console.log(data);
-    const resp=await axios.post(`${process.env.NEXT_PUBLIC_URL}/categories/new`, data, {
+    const resp = await axios.post(
+      `${process.env.NEXT_PUBLIC_URL}/categories/new`,
+      data,
+      {
         headers: {
           "Content-Type": "application/json",
         },
-      })
-      if(resp.status===201 && resp.statusText==="Created"){
-        console.log(resp)
-        toast({
-          title:"Success",
-         description:`Category Successfully Created`
-        })
       }
-      else{
-        console.log(resp);
-        toast({
-          title:"Failure",
-          description:"Category doesn't get created please provide a unique category name and valid description",
-          variant:"destructive"
-        })
-      }
-    
+    );
+    if (resp.status === 201 && resp.statusText === "Created") {
+      console.log(resp);
+      toast({
+        title: "Success",
+        description: `Category Successfully Created`,
+      });
+    } else {
+      console.log(resp);
+      toast({
+        title: "Failure",
+        description:
+          "Category doesn't get created please provide a unique category name and valid description",
+        variant: "destructive",
+      });
+    }
   }
   function onReset() {}
   return (
     <>
       <DefaultLayout>
         <main className="mx-auto w-full max-w-[1080px]">
-          <Breadcrumb pageName="New Category" />
+          <Breadcrumb pageName="Edit Category" />
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category Id</FormLabel>
+                    <FormControl>
+                      <Input value={field.value} />
+                    </FormControl>
+                    <FormDescription>
+                      This is your public display name. It can be your real name
+                      or a pseudonym. You can only change this once every 30
+                      days.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="name"
@@ -78,7 +117,7 @@ export default function NewCategoryPage() {
                   <FormItem>
                     <FormLabel>Category Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Category Name" {...field} />
+                      <Input value={field.name} />
                     </FormControl>
                     <FormDescription>
                       This is your public display name. It can be your real name
@@ -96,11 +135,7 @@ export default function NewCategoryPage() {
                   <FormItem>
                     <FormLabel>Category Description</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="Write a brief description about the category"
-                        className="resize-none"
-                        {...field}
-                      />
+                      <Textarea className="resize-none" value={field.name} />
                     </FormControl>
                     <FormDescription>
                       You can <span>@mention</span> other users and
@@ -111,7 +146,7 @@ export default function NewCategoryPage() {
                 )}
               />
               {/* <div className="inline-flex flex-row items-center justify-between gap-x-2"> */}
-              <Button type="submit">Submit</Button>&nbsp;&nbsp;
+              <Button type="submit">Add Category</Button>&nbsp;&nbsp;
               <Button type="reset">Reset</Button>
               {/* </div> */}
             </form>

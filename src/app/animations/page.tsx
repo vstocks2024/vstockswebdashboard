@@ -1,1 +1,14 @@
-export default async function AnimationPage() {}
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import DefaultLayout from "@/components/Layouts/DefaultLaout";
+
+export default async function AnimationPage() {
+  return (
+    <>
+      <DefaultLayout>
+        <main className="mx-auto w-full max-w-[1080px]">
+          <Breadcrumb pageName="Animations" />
+        </main>
+      </DefaultLayout>
+    </>
+  );
+}
