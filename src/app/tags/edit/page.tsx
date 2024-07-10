@@ -19,13 +19,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@/components/ui/loading-button";
 
+import { useState } from "react";
+
 const FormSchema = z.object({
+  id: z.string().min(1, { message: "Category Id is required to update" }),
   name: z
     .string()
-    .min(2, { message: "Minimum characters must be 2" })
+    .min(2, { message: "Minimum characters must be 3" })
     .max(50, { message: "Maximum characters must be 50" }),
   description: z
     .string()
@@ -33,20 +36,29 @@ const FormSchema = z.object({
     .max(500, { message: "Maximum characters must be 500" }),
 });
 
-export default function NewTagsPage() {
-const [loading, setLoading] = useState(false);
+export default function EditCategoryPage() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tag_id = searchParams.get("tag") as string;
+  if (!tag_id) {
+    router.push("/tags");
+  }
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      id: tag_id,
       name: "",
       description: "",
     },
   });
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
-    //console.log(data);
-    const resp = await axios.post(
-      `${process.env.NEXT_PUBLIC_URL}/tags/new`,
+    console.log(data);
+    const resp = await axios.put(
+      `${process.env.NEXT_PUBLIC_URL}/tags/update`,
       data,
       {
         headers: {
@@ -54,32 +66,49 @@ const [loading, setLoading] = useState(false);
         },
       }
     );
-    if (resp.status === 201 && resp.statusText === "Created") {
-      form.reset();
+    if (resp.status === 200 && resp.statusText === "OK") {
       setLoading(false);
+      form.reset();
       console.log(resp);
       toast({
         title: "Success",
-        description: `Tag Successfully Created`,
+        description: `Tag  Updated Successfully`,
       });
+
     } else {
       console.log(resp);
+      setLoading(false);
       toast({
         title: "Failure",
-        description:
-          "Tag doesn't get created please provide a unique tag name and a valid description",
+        description: "Tag can't be updated at the moment please provide unique tag name and valid description",
         variant: "destructive",
       });
     }
   }
-  function onReset() {}
+
   return (
     <>
       <DefaultLayout>
         <main className="mx-auto w-full max-w-[1080px]">
-          <Breadcrumb pageName="New Tag" />
+          <Breadcrumb pageName= {`Edit Tag`} />
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tag Id</FormLabel>
+                    <FormControl>
+                      <Input disabled {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Tag Id is unique and can not be changed.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="name"
@@ -87,12 +116,10 @@ const [loading, setLoading] = useState(false);
                   <FormItem>
                     <FormLabel>Tag Name</FormLabel>
                     <FormControl>
-                      <Input  placeholder="Enter Tag Name" {...field} />
+                      <Input placeholder="Tag Name" {...field} />
                     </FormControl>
                     <FormDescription>
-                      This is your public display name. It can be your real name
-                      or a pseudonym. You can only change this once every 30
-                      days.
+                      You can change the tag name but keep it unique.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -106,22 +133,24 @@ const [loading, setLoading] = useState(false);
                     <FormLabel>Tag Description</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Write the description about tag"
+                        placeholder="Write a brief description about the tag"
                         className="resize-none"
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      You can <span>@mention</span> other users and
-                      organizations to link to them.
+                      You can change the tag description.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               {/* <div className="inline-flex flex-row items-center justify-between gap-x-2"> */}
-              <LoadingButton loading={loading} className="bg-sky-600 hover:bg-sky-500 text-white" variant={"default"} type="submit">Submit</LoadingButton>&nbsp;&nbsp;
-              <Button variant={"outline"} className="border border-sky-600 hover:border-sky-500" onClick={()=>form.reset()} type="reset">Reset</Button>
+              <LoadingButton variant={'default'} className="bg-sky-600 hover:bg-sky-500 text-white" loading={loading} type="submit">
+                Submit
+              </LoadingButton>
+              &nbsp;&nbsp;
+              <Button className="border border-sky-600" variant={'outline'} onClick={() => router.back()}>Back</Button>
               {/* </div> */}
             </form>
           </Form>

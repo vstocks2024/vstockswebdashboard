@@ -2,16 +2,17 @@
 
 import {
   ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+  VisibilityState,
+  getFilteredRowModel,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
-  ColumnFiltersState,
-  getFilteredRowModel,
-  VisibilityState,
-  SortingState,
-  useReactTable,
   getSortedRowModel,
-} from "@tanstack/react-table"
+  useReactTable,
+} from "@tanstack/react-table";
+import { Input } from "@/components/ui/input";
 
 import {
   Table,
@@ -21,62 +22,59 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input";
-import { useState } from "react"
-import React from "react"
 
 interface DataTableProps<TData, TValue> {
+    
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
-
+import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
+import * as React from "react"
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = useState({});
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] =React.useState<VisibilityState>({});
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+      const [columnVisibility, setColumnVisibility] =React.useState<VisibilityState>({});
+      const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    
-    state:{
-      rowSelection,
+    onRowSelectionChange: setRowSelection,
+    state: {
       sorting,
       columnFilters,
       columnVisibility,
-    }
+      rowSelection,
+    },
   })
 
   return (
     <div>
-            <div className="flex items-center py-4">
+          <div className="flex items-center py-4">
         <Input
           placeholder="Filter names..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("fullName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("fullName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-          <DropdownMenu>
+         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Columns
@@ -154,7 +152,6 @@ export function DataTable<TData, TValue>({
   {table.getFilteredSelectedRowModel().rows.length} of{" "}
   {table.getFilteredRowModel().rows.length} row(s) selected.
 </div>
-      
         <Button
           variant="outline"
           size="sm"

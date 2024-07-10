@@ -1,9 +1,8 @@
 "use client";
 
-
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -20,10 +19,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
-import {useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { LoadingButton } from "@/components/ui/loading-button";
+import { Category } from "../_components/columns";
+import { useState } from "react";
 
 const FormSchema = z.object({
-  id: z.string(),
+  id: z.string().min(1, { message: "Category Id is required to update" }),
   name: z
     .string()
     .min(2, { message: "Minimum characters must be 3" })
@@ -34,33 +36,29 @@ const FormSchema = z.object({
     .max(500, { message: "Maximum characters must be 500" }),
 });
 
-async function handleGetCategoryById(id:string) {
-  const resp=await axios.get(`${process.env.NEXT_PUBLIC_URL}/categories/get/${id}`);
-  console.log(resp);
-
-}
-
 export default function EditCategoryPage() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const category_id=searchParams.get('category_id')
-  console.log(category_id);
-  
+  const category_id = searchParams.get("category") as string;
+  if (!category_id) {
+    router.push("/categories");
+  }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      id:"",
+      id: category_id,
       name: "",
       description: "",
     },
   });
-  
-    
-  
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    //console.log(data);
-    const resp = await axios.post(
-      `${process.env.NEXT_PUBLIC_URL}/categories/new`,
+    setLoading(true);
+    console.log(data);
+    const resp = await axios.put(
+      `${process.env.NEXT_PUBLIC_URL}/categories/update`,
       data,
       {
         headers: {
@@ -68,23 +66,26 @@ export default function EditCategoryPage() {
         },
       }
     );
-    if (resp.status === 201 && resp.statusText === "Created") {
+    if (resp.status === 200 && resp.statusText === "OK") {
+      setLoading(false);
+      form.reset();
       console.log(resp);
       toast({
         title: "Success",
-        description: `Category Successfully Created`,
+        description: `Category Description Updated Successfully`,
       });
+
     } else {
       console.log(resp);
+      setLoading(false);
       toast({
         title: "Failure",
-        description:
-          "Category doesn't get created please provide a unique category name and valid description",
+        description: "Category Description can't be updated",
         variant: "destructive",
       });
     }
   }
-  function onReset() {}
+
   return (
     <>
       <DefaultLayout>
@@ -99,12 +100,10 @@ export default function EditCategoryPage() {
                   <FormItem>
                     <FormLabel>Category Id</FormLabel>
                     <FormControl>
-                      <Input value={field.value} />
+                      <Input disabled {...field} />
                     </FormControl>
                     <FormDescription>
-                      This is your public display name. It can be your real name
-                      or a pseudonym. You can only change this once every 30
-                      days.
+                      Category Id is unique and can not be changed.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -117,12 +116,11 @@ export default function EditCategoryPage() {
                   <FormItem>
                     <FormLabel>Category Name</FormLabel>
                     <FormControl>
-                      <Input value={field.name} />
+                      {/* <Input placeholder="Enter an updated name" /> */}
+                      <Input placeholder="Category Name" {...field} />
                     </FormControl>
                     <FormDescription>
-                      This is your public display name. It can be your real name
-                      or a pseudonym. You can only change this once every 30
-                      days.
+                      You can change the category name but keep it unique.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -135,19 +133,25 @@ export default function EditCategoryPage() {
                   <FormItem>
                     <FormLabel>Category Description</FormLabel>
                     <FormControl>
-                      <Textarea className="resize-none" value={field.name} />
+                      <Textarea
+                        placeholder="Write a brief description about the category"
+                        className="resize-none"
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
-                      You can <span>@mention</span> other users and
-                      organizations to link to them.
+                      You can change the category description.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               {/* <div className="inline-flex flex-row items-center justify-between gap-x-2"> */}
-              <Button type="submit">Add Category</Button>&nbsp;&nbsp;
-              <Button type="reset">Reset</Button>
+              <LoadingButton variant={'default'} className="bg-sky-600 hover:bg-sky-500 text-white" loading={loading} type="submit">
+                Submit
+              </LoadingButton>
+              &nbsp;&nbsp;
+              <Button className="border text-white border-sky-600" variant={'outline'} onClick={() => router.back()}>Back</Button>
               {/* </div> */}
             </form>
           </Form>

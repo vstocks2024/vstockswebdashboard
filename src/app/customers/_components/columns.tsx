@@ -2,10 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,25 +11,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Link from "next/link";
-import axios from "axios";
-
-import DeleteButton from "./DeleteButton";
+} from "@/components/ui/dropdown-menu"
 
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-
-export type Category = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: Date;
-  updatedAt: Date;
+export type Customers = {
+  id: string,
+  username: string,
+  fullName: string,
+  email: string,
+  phone: string,
+  avatarUrl: string,
+  website: string,
+  createdAt: Date,
+  updatedAt: Date,
 };
 
-export const columns: ColumnDef<Category>[] = [
+export const columns: ColumnDef<Customers>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -54,17 +49,21 @@ export const columns: ColumnDef<Category>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+ 
   {
     accessorKey: "id",
     header: "Id",
   },
   {
-    accessorKey: "name",
+    accessorKey: "username",
+    header: "Username",
+  },
+  {
+    accessorKey: "fullName",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          className="flex flex-row items-center justify-start"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Name
@@ -74,8 +73,30 @@ export const columns: ColumnDef<Category>[] = [
     },
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+  },
+  {
+    accessorKey: "phone",
+    header: "Phone",
+  },
+  {
+    accessorKey: "avatarUrl",
+    header: "Avatar",
+  },
+  {
+    accessorKey: "website",
+    header: "Website",
   },
   {
     accessorKey: "createdAt",
@@ -88,9 +109,8 @@ export const columns: ColumnDef<Category>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const category = row.original
-      
-
+      const customer = row.original
+ 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -100,21 +120,18 @@ export const columns: ColumnDef<Category>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel></DropdownMenuLabel>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(category.id)}
+              onClick={() => navigator.clipboard.writeText(customer.id)}
             >
-              Copy Category ID
+              Copy Customer ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link href={`/categories/edit?category=${category.id}`}>Edit</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem><DeleteButton cat_id={category.id}/>
-            </DropdownMenuItem>
+            <DropdownMenuItem>Invoice</DropdownMenuItem>
+            <DropdownMenuItem>Subscription</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      );
+      )
     },
   },
 ];

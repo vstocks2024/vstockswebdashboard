@@ -19,6 +19,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { LoadingButton } from "@/components/ui/loading-button";
+import { useState } from "react";
 
 const FormSchema = z.object({
   name: z
@@ -32,6 +35,8 @@ const FormSchema = z.object({
 });
 
 export default function NewCategoryPage() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const router=useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -41,13 +46,17 @@ export default function NewCategoryPage() {
   });
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     //console.log(data);
+    setLoading(true);
     const resp=await axios.post(`${process.env.NEXT_PUBLIC_URL}/categories/new`, data, {
         headers: {
           "Content-Type": "application/json",
         },
       })
       if(resp.status===201 && resp.statusText==="Created"){
-        console.log(resp)
+        setLoading(false);
+        form.reset();
+        console.log(resp);
+        //router.refresh();
         toast({
           title:"Success",
          description:`Category Successfully Created`
@@ -55,6 +64,7 @@ export default function NewCategoryPage() {
       }
       else{
         console.log(resp);
+        setLoading(false);
         toast({
           title:"Failure",
           description:"Category doesn't get created please provide a unique category name and valid description",
@@ -111,8 +121,8 @@ export default function NewCategoryPage() {
                 )}
               />
               {/* <div className="inline-flex flex-row items-center justify-between gap-x-2"> */}
-              <Button type="submit">Submit</Button>&nbsp;&nbsp;
-              <Button type="reset">Reset</Button>
+              <LoadingButton loading={loading} className="bg-sky-600 hover:bg-sky-500 text-white" variant={"default"} type="submit">Submit</LoadingButton>&nbsp;&nbsp;
+              <Button variant={"outline"} className="border border-sky-600 hover:border-sky-500" onClick={()=>form.reset()} type="reset">Reset</Button>
               {/* </div> */}
             </form>
           </Form>

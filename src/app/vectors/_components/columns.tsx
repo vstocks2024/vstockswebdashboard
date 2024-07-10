@@ -1,7 +1,11 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { ColumnDef,
+  getPaginationRowModel,
+ } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +15,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import DeleteButton from "./DeleteButton";
+
+
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -27,12 +36,44 @@ export type Vectors = {
 
 export const columns: ColumnDef<Vectors>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "id",
     header: "ID",
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
   },
   {
     accessorKey: "description",
@@ -43,7 +84,7 @@ export const columns: ColumnDef<Vectors>[] = [
     header: "Likes",
   },
   {
-    accessorKey: "share",
+    accessorKey: "shares",
     header: "Shared",
   },
   {
@@ -61,8 +102,8 @@ export const columns: ColumnDef<Vectors>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original
- 
+      const vector = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -74,18 +115,26 @@ export const columns: ColumnDef<Vectors>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(vector.id)}
             >
               Copy Vector ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Download</DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link
+                href={{
+                  pathname: "/vectors/edit",
+                  query: { vector: `${vector.id}` },
+                }}
+              >
+                Edit
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem><Link href={"/vectors"}>Download</Link></DropdownMenuItem>
+            <DropdownMenuItem ><DeleteButton vector_id={vector.id}/></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-
 ];
